@@ -1,0 +1,6 @@
+.terraform
+/private-github-ssh-key
+/variables.tf
+/*.pem
+/terraform.*
+/.terraform.lock.hcl

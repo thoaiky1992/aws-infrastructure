@@ -1,0 +1,130 @@
+provider "aws" {
+  region = var.region
+}
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "5.46.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = ">= 3.0.0"
+    }
+  }
+}
+resource "tls_private_key" "dev_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "generated_key" {
+  key_name   = var.key_pair_name
+  public_key = tls_private_key.dev_key.public_key_openssh
+  provisioner "local-exec" {
+    command = <<-EOT
+      rm -rf ${var.key_pair_name}.pem
+      echo "${tls_private_key.dev_key.private_key_pem}" > "${var.key_pair_name}".pem
+      chmod 400 "${var.key_pair_name}".pem
+    EOT
+  }
+
+}
+module "vpc" {
+  source = "./modules/01.vpc"
+}
+module "security_groups" {
+  source = "./modules/02.security-group"
+  vpc_id = module.vpc.vpc_id
+}
+module "iam_role" {
+  source = "./modules/03.iam-role"
+}
+module "database" {
+  source            = "./modules/05.database"
+  subnet_ids        = module.vpc.subnet_ids.private
+  security_group_id = module.security_groups.postgres_security_group.id
+  database_configs  = var.database_configs
+}
+module "ecs_cluster" {
+  source = "./modules/06.ecs-cluster"
+}
+module "ecs_launch_template" {
+  source = "./modules/07.launch-template"
+  ami_id = var.launch_template_ami_id
+  security_groups = {
+    api = module.security_groups.api_security_group
+    ui  = module.security_groups.ui_security_group
+  }
+  ecs_cluster                    = module.ecs_cluster
+  ecs_instance_role_profile_name = module.iam_role.ecs_instance_role.profile_name
+  key_pair_name                  = var.key_pair_name
+}
+module "auto_scaling_group" {
+  source             = "./modules/08.auto-scaling-group"
+  public_subnet_ids  = module.vpc.subnet_ids.public
+  private_subnet_ids = module.vpc.subnet_ids.private
+  launch_template    = module.ecs_launch_template
+}
+module "load_balancer" {
+  source          = "./modules/09.load-balancer"
+  security_groups = [module.security_groups.api_security_group.id]
+  subnet_ids      = module.vpc.subnet_ids.private
+  vpc_id          = module.vpc.vpc_id
+}
+module "bastion_host" {
+  source              = "./modules/04.bastion-host"
+  key_name            = var.key_pair_name
+  security_group_id   = module.security_groups.bastion_host_security_group.id
+  ssh_key             = file("private-github-ssh-key")
+  subnet_id           = module.vpc.subnet_ids.public[0]
+  backend_url         = "http://${module.load_balancer.api.dns_name}"
+  docker_hub_password = var.docker_hub_password
+  depends_on          = [module.load_balancer]
+}
+module "ecs_task_definition" {
+  source                  = "./modules/10.task-definition"
+  ecs_task_execution_role = module.iam_role.ecs_task_execution_role
+  region                  = var.region
+  database_url            = "postgresql://${var.database_configs.username}:${module.database.password}@${module.database.address}:${var.database_configs.port}/${var.database_configs.name}?schema=public"
+  next_public_backend_url = "http://${module.load_balancer.api.dns_name}/api"
+  depends_on              = [module.database, module.bastion_host]
+}
+module "ecs_service" {
+  source              = "./modules/11.ecs-service"
+  ecs_cluster         = module.ecs_cluster
+  ecs_task_definition = module.ecs_task_definition
+  target_group        = module.load_balancer.target_group
+}
+module "auto_scaling_ecs_api_task" {
+  source               = "./modules/12.auto-scaling-ecs-api-task"
+  ecs_api_service_name = module.ecs_service.api.name
+  ecs_cluster          = module.ecs_cluster
+  auto_scaling_group   = module.auto_scaling_group
+
+  depends_on = [module.ecs_service]
+}
+# module "prometheus" {
+#   source             = "./modules/15.prometheus"
+#   region             = var.region
+#   aws_access_key     = var.aws_access_key
+#   aws_secret_key     = var.aws_secret_key
+#   key_pair_name      = var.key_pair_name
+#   ecs_instance_role  = module.iam_role.ecs_instance_role
+#   instance_tag_regex = "ecs-api-instance"
+#   security_group_ids = [module.security_groups.prometheus_security_group.id]
+#   subnet_id          = module.vpc.subnet_ids.public[0]
+
+#   depends_on = [module.ecs_api_service]
+# }
+
+# module "grafana" {
+#   source             = "./modules/16.grafana"
+#   key_pair_name      = var.key_pair_name
+#   ecs_instance_role  = module.iam_role.ecs_instance_role
+#   security_group_ids = [module.security_groups.grafana_security_group.id]
+#   subnet_id          = module.vpc.subnet_ids.public[1]
+
+#   depends_on = [module.prometheus]
+# }
+

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+# Update and install git
+sudo yum update -y
+sudo yum install git -y
+
+# Create SSH key file
+mkdir -p ~/.ssh
+echo "${SSH_KEY}" > ~/.ssh/github_ssh_key
+chmod 600 ~/.ssh/github_ssh_key
+ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
+eval $(ssh-agent -s)
+ssh-add ~/.ssh/github_ssh_key
+
+
+# Clone repository and build Docker UI image
+git clone git@github.com:thoaiky1992/aws-infrastructure.git /home/aws-infrastructure
+chmod -R 777 /home/aws-infrastructure/nginx
+cd /home/aws-infrastructure/nginx
+sudo cp .example.env .env
+sed -i "s|BACKEND_URL|$BACKEND_URL|g" app.conf
+
+# Login to Docker Hub and build/push image
+echo "${DOCKER_HUB_PASSWORD}" | docker login -u thoaiky1992 --password-stdin
+docker build -t nginxlatest .
+docker tag nginx:latest thoaiky1992/nginx:latest
+docker push thoaiky1992/nginxlatest

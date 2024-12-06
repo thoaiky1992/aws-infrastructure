@@ -1,0 +1,34 @@
+#!/bin/bash
+echo ECS_CLUSTER=${ECS_CLUSTER_NAME} >> /etc/ecs/ecs.config
+
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+
+# Cài đặt node_exporter
+# sleep 60
+# sudo yum update -y
+# sudo yum install -y wget tar
+# sudo wget https://github.com/prometheus/node_exporter/releases/download/v1.8.2/node_exporter-1.8.2.linux-amd64.tar.gz
+# sudo tar xzf node_exporter-1.8.2.linux-amd64.tar.gz
+# sudo rm -rf node_exporter-1.8.2.linux-amd64.tar.gz
+# sudo mv node_exporter-1.8.2.linux-amd64 /etc/node_exporter
+# # Tạo file dịch vụ systemd cho node_exporter
+# sudo cat > /etc/systemd/system/node_exporter.service <<"EOF"
+# [Unit]
+# Description=Node Exporter
+# Wants=network-online.target
+# After=network-online.target
+
+# [Service]
+# ExecStart=/etc/node_exporter/node_exporter 
+# Restart=always
+
+# [Install]
+# WantedBy=multi-user.target
+# EOF
+
+# sudo systemctl daemon-reload
+# sudo systemctl start node_exporter
+# sudo systemctl enable node_exporter

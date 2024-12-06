@@ -1,0 +1,42 @@
+datasource db {
+  url      = env("DATABASE_URL")
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  name String @db.Char(100)
+  User User[]
+
+  @@map("roles")
+}
+
+model Country {
+  id   Int    @id @default(autoincrement())
+  name String @db.Char(100)
+  User User[]
+
+  @@map("countries")
+}
+
+model User {
+  id          Int     @id @default(autoincrement())
+  username    String
+  email       String  @unique
+  roleId      Int     @map("role_id")
+  role        Role    @relation(fields: [roleId], references: [id])
+  countryId   Int     @map("country_id")
+  country     Country @relation(fields: [countryId], references: [id])
+  active      Boolean @default(true)
+  description String? @db.Text
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  @@map("users")
+}

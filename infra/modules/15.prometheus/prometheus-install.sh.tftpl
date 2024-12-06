@@ -1,0 +1,69 @@
+#! /bin/bash
+yum update -y
+# Download the source using curl, untar it, and rename the extracted folder to prometheus-files
+curl -L https://github.com/prometheus/prometheus/releases/download/v2.53.3/prometheus-2.53.3.linux-amd64.tar.gz -o prometheus-2.53.3.linux-amd64.tar.gz
+tar -xvf prometheus-2.53.3.linux-amd64.tar.gz
+mv prometheus-2.53.3.linux-amd64 prometheus-files 
+# Create a Prometheus user, required directories, and make Prometheus the user as the owner of those directories
+useradd --no-create-home --shell /bin/false prometheus
+mkdir /etc/prometheus
+mkdir /var/lib/prometheus
+chown prometheus:prometheus /etc/prometheus
+chown prometheus:prometheus /var/lib/prometheus
+# Copy prometheus and promtool binary from prometheus-files folder to /usr/local/bin and change the ownership to prometheus user
+cp prometheus-files/prometheus /usr/local/bin/
+cp prometheus-files/promtool /usr/local/bin/
+chown prometheus:prometheus /usr/local/bin/prometheus
+chown prometheus:prometheus /usr/local/bin/promtool
+# Move the consoles and console_libraries directories from prometheus-files to /etc/prometheus folder and change the ownership to prometheus user
+cp -r prometheus-files/consoles /etc/prometheus
+cp -r prometheus-files/console_libraries /etc/prometheus
+chown -R prometheus:prometheus /etc/prometheus/consoles
+chown -R prometheus:prometheus /etc/prometheus/console_libraries
+
+# Create the prometheus.yml file, populate file with config
+cat > /etc/prometheus/prometheus.yml << "EOF"
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "node_exporter"
+    ec2_sd_configs:
+      - region: ${region}
+        access_key: ${access_key}
+        secret_key: ${secret_key}
+        port: 9100
+    relabel_configs:
+      - source_labels: [__meta_ec2_tag_Name]
+        regex: ${instance_tag_regex}
+        action: keep
+EOF
+    
+# Change the ownership of the file to prometheus user
+chown prometheus:prometheus /etc/prometheus/prometheus.yml
+
+# Create a prometheus service file, populate with config
+cat > /etc/systemd/system/prometheus.service << "EOF"
+[Unit]
+Description=Prometheus
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \
+  --config.file /etc/prometheus/prometheus.yml \
+  --storage.tsdb.path /var/lib/prometheus/ \
+  --web.console.templates=/etc/prometheus/consoles \
+  --web.console.libraries=/etc/prometheus/console_libraries
+
+[Install]
+WantedBy=multi-user.target
+EOF
+    
+# Reload the systemd service to register the prometheus service and start the prometheus service
+systemctl daemon-reload
+systemctl enable prometheus
+systemctl start prometheus

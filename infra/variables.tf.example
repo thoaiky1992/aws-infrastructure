@@ -1,0 +1,60 @@
+variable "key_pair_name" {
+  description = "Key pair name"
+  type        = string
+  default     = "aws-key"
+}
+variable "ssh_key_email" {
+  description = "ssh_key_email"
+  type        = string
+  default     = ""
+}
+variable "region" {
+  description = "Region"
+  type        = string
+  default     = "ap-southeast-1"
+}
+variable "launch_template_ami_id" {
+  description = "Launch template AMI ID"
+  type        = string
+  default     = "ami-02865bbb5ac96158d"
+}
+variable "aws_access_key" {
+  type    = string
+  default = ""
+}
+variable "aws_secret_key" {
+  type    = string
+  default = ""
+}
+variable "database_configs" {
+  type = object({
+    storage_type         = string
+    engine               = string
+    engine_version       = string
+    instance_class       = string
+    name                 = string
+    username             = string
+    port                 = number
+    parameter_group_name = string
+    skip_final_snapshot  = bool
+    publicly_accessible  = bool
+  })
+  default = {
+    storage_type         = "gp2"
+    engine               = "postgres"
+    engine_version       = "16.3"
+    instance_class       = "db.t3.micro"
+    name                 = "app"
+    username             = "username"
+    port                 = 5432
+    parameter_group_name = "default.postgres16"
+    skip_final_snapshot  = true
+    publicly_accessible  = false
+  }
+}
+
+variable "docker_hub_password" {
+  type    = string
+  default = ""
+}
+
