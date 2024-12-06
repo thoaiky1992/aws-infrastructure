@@ -1,0 +1,34 @@
+services:
+  #Postgres
+  postgres:
+    container_name: 'postgres'
+    image: 'postgres'
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: 'app_db'
+      POSTGRES_USER: 'thoaiky1992'
+      POSTGRES_PASSWORD: 'thoaiky1992'
+    volumes:
+      - ./postgres-data:/data/postgres
+    networks:
+      - app-network
+    ports:
+      - 5432:5432
+
+  #Adminer
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
+
+#Networks
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
