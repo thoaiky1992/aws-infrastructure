@@ -7,7 +7,7 @@ variable "ami_id" {
 variable "instance_type" {
   description = "The instance type for the bastion host"
   type        = string
-  default     = "t2.micro"
+  default     = "t2.small"
 }
 
 variable "subnet_id" {
