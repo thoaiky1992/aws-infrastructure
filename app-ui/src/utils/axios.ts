@@ -1,8 +1,9 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 const axiosInstance: AxiosInstance = axios.create({
-  // baseURL: process.env.NEXT_PUBLIC_BACKEND_URL + '/api',
-  baseURL: '/api',
+  baseURL: process.env.NODE_ENV === "production" ? "/api" : BACKEND_URL + "/api",
+  // baseURL: '/api',
   headers: {
     "content-type": "application/json",
   },
