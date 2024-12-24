@@ -1,7 +1,7 @@
 variable "ami_id" {
   description = "The AMI ID for the bastion host"
   type        = string
-  default     = "ami-07757425cb19b6564" // amzn2-ami-ecs-hvm-2.0.20241108-x86_64-ebs (region: Singapore)
+  default     = "ami-06650ca7ed78ff6fa" // Canonical, Ubuntu, 24.04, amd64 noble image (region: Singapore)
 }
 
 variable "instance_type" {
