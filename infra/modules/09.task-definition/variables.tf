@@ -22,6 +22,6 @@ variable "next_public_backend_url" {
 variable "ui_load_balancer_url" {
   type = string
 }
-variable "environment" {
+variable "tag_version" {
   type = string
 }

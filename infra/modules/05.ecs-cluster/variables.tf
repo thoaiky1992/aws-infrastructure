@@ -1,3 +1,3 @@
-variable "environment" {
+variable "tag_version" {
   type = string
 }

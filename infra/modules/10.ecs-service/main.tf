@@ -1,5 +1,5 @@
 resource "aws_ecs_service" "ecs_api_service" {
-  name            = "${replace(var.environment, ".", "-")}-ecs-api-service"
+  name            = "${replace(var.tag_version, ".", "-")}-ecs-api-service"
   cluster         = var.ecs_cluster.api.id
   task_definition = var.ecs_task_definition.api.arn
   desired_count   = 2
@@ -19,7 +19,7 @@ resource "aws_ecs_service" "ecs_api_service" {
 }
 
 resource "aws_ecs_service" "ecs_ui_service" {
-  name            = "${replace(var.environment, ".", "-")}-ecs-ui-service"
+  name            = "${replace(var.tag_version, ".", "-")}-ecs-ui-service"
   cluster         = var.ecs_cluster.ui.id
   task_definition = var.ecs_task_definition.ui.arn
   desired_count   = 1
@@ -38,7 +38,7 @@ resource "aws_ecs_service" "ecs_ui_service" {
   }
 }
 resource "aws_ecs_service" "ecs_nginx_service" {
-  name            = "${replace(var.environment, ".", "-")}-ecs-nginx-service"
+  name            = "${replace(var.tag_version, ".", "-")}-ecs-nginx-service"
   cluster         = var.ecs_cluster.ui.id
   task_definition = var.ecs_task_definition.nginx.arn
   desired_count   = 1

@@ -1,5 +1,5 @@
 resource "aws_launch_template" "ecs_api_launch_template" {
-  name_prefix   = "${var.environment}-ecs-app-template"
+  name_prefix   = "${var.tag_version}-ecs-app-template"
   image_id      = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_pair_name
@@ -20,7 +20,7 @@ resource "aws_launch_template" "ecs_api_launch_template" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "${var.environment}-ecs-api-instance"
+      Name = "${var.tag_version}-ecs-api-instance"
     }
   }
 
@@ -28,7 +28,7 @@ resource "aws_launch_template" "ecs_api_launch_template" {
 }
 
 resource "aws_launch_template" "ecs_ui_launch_template" {
-  name_prefix   = "${var.environment}-ecs-ui-template"
+  name_prefix   = "${var.tag_version}-ecs-ui-template"
   image_id      = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_pair_name
@@ -49,7 +49,7 @@ resource "aws_launch_template" "ecs_ui_launch_template" {
   tag_specifications {
     resource_type = "instance"
     tags = {
-      Name = "${var.environment}-ecs-ui-instance"
+      Name = "${var.tag_version}-ecs-ui-instance"
     }
   }
 

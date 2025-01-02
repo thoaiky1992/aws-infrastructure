@@ -1,16 +1,14 @@
 variable "region" {
   type = string
-  default = "ap-southeast-1"
+}
+variable "tag_version" {
+  type = string
 }
 variable "key_pair_name" {
   type = string
 }
-variable "ssh_private_key" {
+variable "environment" {
   type = string
-}
-variable "ecs_launch_template_ami_id" {
-  type = string
-  default = "ami-02865bbb5ac96158d"
 }
 variable "database" {
   type = object({
@@ -27,7 +25,6 @@ variable "database" {
     publicly_accessible  = bool
   })
 }
-variable "environment" {
+variable "ssh_private_key" {
   type = string
 }
-

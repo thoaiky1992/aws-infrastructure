@@ -13,6 +13,6 @@ resource "aws_instance" "bastion" {
   }
 
   tags = {
-    Name = "${var.environment}-bastion-host"
+    Name = "${var.tag_version}-bastion-host"
   }
 }

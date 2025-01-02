@@ -2,7 +2,7 @@
   Cấu hình auto scaling group khi CPU/RAM vượt quá mức cho phép sẽ tăng số lượng ec2 instance cần thiét
 */
 resource "aws_autoscaling_group" "ecs_api_auto_scaling_group" {
-  name                = "${var.environment}-ecs-api-auto-scaling-group"
+  name                = "${var.tag_version}-ecs-api-auto-scaling-group"
   vpc_zone_identifier = var.private_subnet_ids
   desired_capacity    = 2
   max_size            = 10
@@ -14,7 +14,7 @@ resource "aws_autoscaling_group" "ecs_api_auto_scaling_group" {
   }
 }
 resource "aws_autoscaling_policy" "ecs_api_scale_out_ec2_istance_by_cpu" {
-  name                    = "${var.environment}-ecs-api-scale-out-ec2-istance-by-cpu"
+  name                    = "${var.tag_version}-ecs-api-scale-out-ec2-istance-by-cpu"
   scaling_adjustment      = 1 // số lượng instance sẽ được thêm khi scale up thực hiện
   adjustment_type         = "ChangeInCapacity"
   cooldown                = 300 // sau khi scale up thì 300s (5 phút) tiếp theo sẽ không làm bất cứ gì
@@ -24,7 +24,7 @@ resource "aws_autoscaling_policy" "ecs_api_scale_out_ec2_istance_by_cpu" {
 }
 
 resource "aws_autoscaling_policy" "ecs_api_scale_in_ec2_istance_by_cpu" {
-  name                    = "${var.environment}-ecs-api-scale-in-ec2-istance-by-cpu"
+  name                    = "${var.tag_version}-ecs-api-scale-in-ec2-istance-by-cpu"
   scaling_adjustment      = -1
   adjustment_type         = "ChangeInCapacity"
   cooldown                = 300
@@ -35,7 +35,7 @@ resource "aws_autoscaling_policy" "ecs_api_scale_in_ec2_istance_by_cpu" {
 
 // nếu số lần lặp x thời gian = 1 x 60 = 60s > 70% CPU sẽ scale up
 resource "aws_cloudwatch_metric_alarm" "ecs_api_high_cpu_alarm" {
-  alarm_name          = "${var.environment}-ecs-api-high-cpu-alarm"
+  alarm_name          = "${var.tag_version}-ecs-api-high-cpu-alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1" // số lần lặp
   metric_name         = "CPUUtilization" // các metric khác: MemoryUtilization, ....
@@ -51,7 +51,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_api_high_cpu_alarm" {
 }
 
 resource "aws_cloudwatch_metric_alarm" "ecs_api_low_cpu_alarm" {
-  alarm_name          = "${var.environment}-ecs-api-low-cpu-alarm"
+  alarm_name          = "${var.tag_version}-ecs-api-low-cpu-alarm"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"
@@ -69,7 +69,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_api_low_cpu_alarm" {
 
 // ----- START AUTO_SCALING_GROUP UI -----
 resource "aws_autoscaling_group" "ecs_ui_auto_scaling_group" {
-  name                = "${var.environment}-ecs-ui-auto-scaling-group"
+  name                = "${var.tag_version}-ecs-ui-auto-scaling-group"
   vpc_zone_identifier = var.public_subnet_ids
   desired_capacity    = 1
   max_size            = 1

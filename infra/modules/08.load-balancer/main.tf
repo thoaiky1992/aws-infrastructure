@@ -1,17 +1,17 @@
 # --- START LOAD BALANCER FOR API ---
 resource "aws_lb" "ecs_api_load_balancer" {
-  name               = "${replace(var.environment, ".", "-")}-ecs-api-load-balancer"
+  name               = "${replace(var.tag_version, ".", "-")}-ecs-api-load-balancer"
   internal           = true
   load_balancer_type = "application"
   security_groups    = var.api_security_groups
   subnets            = var.subnet_ids.private
 
   tags = {
-    Name = "${var.environment}-ecs-api-alb"
+    Name = "${var.tag_version}-ecs-api-alb"
   }
 }
 resource "aws_lb_target_group" "ecs_api_target_group" {
-  name        = "${replace(var.environment, ".", "-")}-ecs-api-target-group"
+  name        = "${replace(var.tag_version, ".", "-")}-ecs-api-target-group"
   port        = 4000
   protocol    = "HTTP"
   target_type = "instance"
@@ -37,18 +37,18 @@ resource "aws_lb_listener" "ecs_api_alb_listener" {
 
 # --- START LOAD BALANCER FOR UI ---
 resource "aws_lb" "ecs_ui_load_balancer" {
-  name               = "${replace(var.environment, ".", "-")}-ecs-ui-load-balancer"
+  name               = "${replace(var.tag_version, ".", "-")}-ecs-ui-load-balancer"
   internal           = false
   load_balancer_type = "application"
   security_groups    = var.ui_security_groups
   subnets            = var.subnet_ids.public
 
   tags = {
-    Name = "${var.environment}-ecs-ui-alb"
+    Name = "${var.tag_version}-ecs-ui-alb"
   }
 }
 resource "aws_lb_target_group" "ecs_nginx_target_group" {
-  name        = "${replace(var.environment, ".", "-")}-ecs-nginx-target-group"
+  name        = "${replace(var.tag_version, ".", "-")}-ecs-nginx-target-group"
   port        = 80
   protocol    = "HTTP"
   target_type = "instance"
@@ -59,7 +59,7 @@ resource "aws_lb_target_group" "ecs_nginx_target_group" {
   }
 }
 resource "aws_lb_target_group" "ecs_ui_target_group" {
-  name        = "${replace(var.environment, ".", "-")}-ecs-ui-target-group"
+  name        = "${replace(var.tag_version, ".", "-")}-ecs-ui-target-group"
   port        = 3000
   protocol    = "HTTP"
   target_type = "instance"

@@ -1,5 +1,5 @@
 resource "aws_db_subnet_group" "postgres_dbsg" {
-  name       = "main"
+  name       = "${var.tag_version}-main"
   subnet_ids = var.subnet_ids
 
   tags = {
@@ -28,7 +28,7 @@ resource "aws_db_instance" "postgres_instance" {
   parameter_group_name    = var.database_configs.parameter_group_name
   skip_final_snapshot     = var.database_configs.skip_final_snapshot
   db_subnet_group_name    = aws_db_subnet_group.postgres_dbsg.name
-  identifier              = "${replace(var.environment, ".", "-")}-postgres-app"
+  identifier              = "${replace(var.tag_version, ".", "-")}-postgres-app"
   backup_retention_period = 7
 
   # Các thiết lập bảo mật
@@ -36,7 +36,7 @@ resource "aws_db_instance" "postgres_instance" {
   vpc_security_group_ids = [var.security_group_id]
 
   tags = {
-    Name = "${var.environment}-postgres"
+    Name = "${var.tag_version}-postgres"
   }
 }
 

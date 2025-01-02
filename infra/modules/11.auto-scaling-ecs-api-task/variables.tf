@@ -20,6 +20,6 @@ variable "auto_scaling_group" {
     })
   })
 }
-variable "environment" {
+variable "tag_version" {
   type = string
 }

@@ -39,6 +39,6 @@ variable "target_group" {
     })
   })
 }
-variable "environment" {
+variable "tag_version" {
   type = string
 }

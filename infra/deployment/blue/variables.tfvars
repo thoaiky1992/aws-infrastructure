@@ -1,12 +1,7 @@
-ssh_private_key            = <<EOF
------BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEA7V1...
-... (nội dung private key của bạn) ...
------END RSA PRIVATE KEY-----
-EOF
-key_pair_name              = "aws-key"
-region                     = "ap-southeast-1"
-ecs_launch_template_ami_id = "ami-02865bbb5ac96158d"
+region = "ap-southeast-1"
+tag_version = "v.2.0.0"
+key_pair_name = "aws-key"
+environment = "dev"
 database = {
   storage_type         = "gp2"
   engine               = "postgres"
@@ -20,4 +15,8 @@ database = {
   skip_final_snapshot  = true
   publicly_accessible  = false
 }
-environment = "dev"
+ssh_private_key            = <<EOF
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA7V1
+-----END RSA PRIVATE KEY-----
+EOF

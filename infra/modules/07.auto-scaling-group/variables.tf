@@ -19,6 +19,6 @@ variable "launch_template" {
     })
   })
 }
-variable "environment" {
+variable "tag_version" {
   type = string
 }

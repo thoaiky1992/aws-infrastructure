@@ -18,6 +18,6 @@ variable "vpc_id" {
   description = "The VPC ID where the load balancer and target group will be deployed"
   type        = string
 }
-variable "environment" {
+variable "tag_version" {
   type = string
 }

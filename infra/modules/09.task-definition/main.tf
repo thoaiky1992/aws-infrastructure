@@ -1,9 +1,9 @@
 resource "aws_cloudwatch_log_group" "ecs_api_log_group" {
-  name              = "${var.environment}/ecs/ecs-api-task"
+  name              = "${var.tag_version}/ecs/ecs-api-task"
   retention_in_days = 7
 }
 resource "aws_ecs_task_definition" "ecs_api_task_definition" {
-  family             = "${replace(var.environment, ".", "-")}-ecs-api-task"
+  family             = "${replace(var.tag_version, ".", "-")}-ecs-api-task"
   network_mode       = "bridge"
   execution_role_arn = var.ecs_task_execution_role.arn
   cpu                = 256
@@ -21,9 +21,9 @@ resource "aws_ecs_task_definition" "ecs_api_task_definition" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "${var.environment}/ecs/ecs-api-task"
+          "awslogs-group"         = "${var.tag_version}/ecs/ecs-api-task"
           "awslogs-region"        = var.region
-          "awslogs-stream-prefix" = var.environment
+          "awslogs-stream-prefix" = var.tag_version
         }
       }
       portMappings = [
@@ -53,13 +53,13 @@ resource "aws_ecs_task_definition" "ecs_api_task_definition" {
 
 // ----- START UI TASK -----
 resource "aws_cloudwatch_log_group" "ecs_ui_log_group" {
-  name              = "${var.environment}/ecs/ecs-ui-task"
+  name              = "${var.tag_version}/ecs/ecs-ui-task"
   retention_in_days = 7
 }
 
 
 resource "aws_ecs_task_definition" "ecs_ui_task_definition" {
-  family             = "${replace(var.environment, ".", "-")}-ecs-ui-task"
+  family             = "${replace(var.tag_version, ".", "-")}-ecs-ui-task"
   network_mode       = "bridge"
   execution_role_arn = var.ecs_task_execution_role.arn
   cpu                = 512
@@ -86,20 +86,20 @@ resource "aws_ecs_task_definition" "ecs_ui_task_definition" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "${var.environment}/ecs/ecs-ui-task"
+          "awslogs-group"         = "${var.tag_version}/ecs/ecs-ui-task"
           "awslogs-region"        = var.region
-          "awslogs-stream-prefix" = var.environment
+          "awslogs-stream-prefix" = var.tag_version
         }
       }
     },
   ])
 }
 resource "aws_cloudwatch_log_group" "ecs_nginx_log_group" {
-  name              = "${var.environment}/ecs/ecs-nginx-task"
+  name              = "${var.tag_version}/ecs/ecs-nginx-task"
   retention_in_days = 7
 }
 resource "aws_ecs_task_definition" "ecs_nginx_task_definition" {
-  family             = "${replace(var.environment, ".", "-")}-ecs-nginx-task"
+  family             = "${replace(var.tag_version, ".", "-")}-ecs-nginx-task"
   network_mode       = "bridge"
   execution_role_arn = var.ecs_task_execution_role.arn
   cpu                = 512
@@ -137,9 +137,9 @@ resource "aws_ecs_task_definition" "ecs_nginx_task_definition" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = "${var.environment}/ecs/ecs-nginx-task"
+          "awslogs-group"         = "${var.tag_version}/ecs/ecs-nginx-task"
           "awslogs-region"        = var.region
-          "awslogs-stream-prefix" = var.environment
+          "awslogs-stream-prefix" = var.tag_version
         }
       }
     }

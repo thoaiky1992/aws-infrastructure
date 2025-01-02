@@ -24,6 +24,6 @@ variable "key_name" {
   description = "The key pair name to use for SSH access to the bastion host"
   type        = string
 }
-variable "environment" {
+variable "tag_version" {
   type = string
 }

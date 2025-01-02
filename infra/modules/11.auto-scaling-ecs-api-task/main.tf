@@ -11,7 +11,7 @@ resource "aws_appautoscaling_target" "ecs_service" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_api_cale_out_task" {
-  name               = "${var.environment}-ecs-api-cale-out-task"
+  name               = "${var.tag_version}-ecs-api-cale-out-task"
   policy_type        = "StepScaling"
   resource_id        = aws_appautoscaling_target.ecs_service.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_service.scalable_dimension
@@ -30,7 +30,7 @@ resource "aws_appautoscaling_policy" "ecs_api_cale_out_task" {
 }
 
 resource "aws_appautoscaling_policy" "ecs_api_cale_in_task" {
-  name               = "${var.environment}-ecs-api-cale-in-task"
+  name               = "${var.tag_version}-ecs-api-cale-in-task"
   policy_type        = "StepScaling"
   resource_id        = aws_appautoscaling_target.ecs_service.resource_id
   scalable_dimension = aws_appautoscaling_target.ecs_service.scalable_dimension
@@ -50,7 +50,7 @@ resource "aws_appautoscaling_policy" "ecs_api_cale_in_task" {
 
 // nếu số lần lặp x thời gian = 1 x 60 = 60s > 70% CPU sẽ scale up
 resource "aws_cloudwatch_metric_alarm" "ecs_api_scale_out_task_alarm" {
-  alarm_name          = "${var.environment}-ecs-api-scale-out-task-alarm"
+  alarm_name          = "${var.tag_version}-ecs-api-scale-out-task-alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods  = "1" // số lần lặp
   metric_name         = "CPUUtilization"
@@ -65,7 +65,7 @@ resource "aws_cloudwatch_metric_alarm" "ecs_api_scale_out_task_alarm" {
   }
 }
 resource "aws_cloudwatch_metric_alarm" "ecs_api_scale_in_task_alarm" {
-  alarm_name          = "${var.environment}-ecs-api-scale-in-task-alarm"
+  alarm_name          = "${var.tag_version}-ecs-api-scale-in-task-alarm"
   comparison_operator = "LessThanOrEqualToThreshold"
   evaluation_periods  = "2"
   metric_name         = "CPUUtilization"

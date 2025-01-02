@@ -7,10 +7,6 @@ variable "security_group_id" {
   description = "The security group ID to associate with the RDS instance"
   type        = string
 }
-variable "is_blue_deployment" {
-  type    = bool
-  default = false
-}
 
 variable "database_configs" {
   description = "Configuration for the RDS instance"
@@ -28,6 +24,6 @@ variable "database_configs" {
     publicly_accessible  = bool
   })
 }
-variable "environment" {
-  type = string
+variable "tag_version" {
+  type = string 
 }
